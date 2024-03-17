@@ -1,0 +1,13 @@
+kind: Route
+apiVersion: route.openshift.io/v1
+metadata:
+  name: {{ name }}
+  namespace: {{ namespace }}
+spec:
+  to:
+    kind: Service
+    name: {{ name }}
+    weight: 100
+  port:
+    targetPort: 80
+  wildcardPolicy: None

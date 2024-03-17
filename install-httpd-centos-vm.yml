@@ -1,0 +1,79 @@
+---
+- name: "install centos vm with httpd configured"
+  hosts: all
+  vars_files:
+    - vars.yml
+  tasks:
+    - name: "Create Namespace {{ namespace }}"
+      kubernetes.core.k8s:
+        state: present
+        template: namespace.yml.j2
+
+    - name: Set cloud-init fact
+      ansible.builtin.set_fact:
+        deploy_collection_cloud_init_content: |
+          #cloud-config
+          user: cloud-user
+          password: admin
+          chpasswd:
+            expire: false
+          bootcmd:
+            - sudo yum install -y httpd
+            - sudo systemctl enable httpd
+            - sudo systemstl start httpd
+            - sudo echo "hello world" >> /var/www/html/index.html
+            - sudo systemctl restart httpd
+
+
+    - name: Create cloud-init Secret
+      kubernetes.core.k8s:
+        state: present
+        definition:
+          apiVersion: v1
+          kind: Secret
+          type: Generic
+          metadata:
+            name: "{{ cloud_init_secret }}"
+            namespace: "{{ namespace }}"
+          data:
+            userdata: "{{ deploy_collection_cloud_init_content | b64encode }}"
+
+    - name: "Create VirtualMachine"
+      kubernetes.core.k8s:
+        state: present
+        template: virtualmachine.yml.j2
+
+    - name: Wait for VM to be ready
+      kubernetes.core.k8s_info:
+        api_version: kubevirt.io/v1
+        kind: VirtualMachine
+        name: "{{ name }}"
+        namespace: "{{ namespace }}"
+      register: deploy_collection_vm
+      retries: 60
+      delay: 10
+      until:
+      - deploy_collection_vm.resources[0].status is defined
+      - deploy_collection_vm.resources[0].status.ready is true
+
+    - name: Wait for VM IP to be populated
+      kubernetes.core.k8s_info:
+        api_version: kubevirt.io/v1
+        kind: VirtualMachineInstance
+        name: "{{ name }}"
+        namespace: "{{ namespace }}"
+      register: deploy_collection_vmi
+      retries: 60
+      delay: 10
+      until: (deploy_collection_vmi.resources[0].status.interfaces[0]['ipAddress'] | default('')) | length > 0
+
+
+    - name: "Create Service"
+      kubernetes.core.k8s:
+        state: present
+        template: service.yml.j2
+
+    - name: "Create Route"
+      kubernetes.core.k8s:
+        state: present
+        template: route.yml.j2
