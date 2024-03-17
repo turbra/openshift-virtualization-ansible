@@ -9,3 +9,4 @@ vm_cpus_threads: 1
 macAddress: '02:2c:5a:00:00:00'
 vm_machine_type: 'pc-q35-rhel8.6.0'
 vm_memory_requests: '2Gi'
+cloud_init_secret: cloud-init
