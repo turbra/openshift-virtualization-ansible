@@ -1,45 +1,17 @@
-- hosts: localhost
-  name: local
+---
+- name: Ansible Playbook 1
+  hosts: all
   tasks:
-  - name: Create VM
-    kubevirt.core.kubevirt_vm:
-      state: present
-      name: testvm
-      namespace: kubevirt-ansible
-      labels:
-        app: test
-      instancetype:
-        name: u1.medium
-      preference:
-        name: fedora
-      spec:
-        domain:
-          devices:
-            interfaces:
-            - name: default
-              masquerade: {}
-            - name: secondary-network
-              bridge: {}
-        networks:
-        - name: default
-          pod: {}
-        - name: secondary-network
-          multus:
-            networkName: secondary-network
-        accessCredentials:
-        - sshPublicKey:
-            source:
-              secret:
-                secretName: my-pub-key
-            propagationMethod:
-              configDrive: {}
-        volumes:
-        - containerDisk:
-            image: quay.io/containerdisks/fedora:latest
-          name: containerdisk
-        - cloudInitConfigDrive:
-            userData: |-
-              #cloud-config
-              # The default username is: fedora
-          name: cloudinit
-      wait: yes
+    - name: Create my first VM
+      kubevirt_vm:
+        namespace: default
+        name: vm1
+        cpu_cores: 1
+        memory: 64Mi
+        disks:
+          - name: containerdisk
+            volume:
+              containerDisk:
+                image: kubevirt/cirros-container-disk-demo:latest
+            disk:
+              bus: virtio
