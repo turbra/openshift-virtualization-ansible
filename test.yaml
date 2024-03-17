@@ -1,0 +1,17 @@
+---
+- name: Ansible Playbook 1
+  hosts: all
+  tasks:
+    - name: Create my first VM
+      kubevirt_vm:
+        namespace: default
+        name: vm1
+        cpu_cores: 1
+        memory: 64Mi
+        disks:
+          - name: containerdisk
+            volume:
+              containerDisk:
+                image: kubevirt/cirros-container-disk-demo:latest
+            disk:
+              bus: virtio
