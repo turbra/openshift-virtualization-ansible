@@ -24,7 +24,6 @@
             - sudo echo "hello world" >> /var/www/html/index.html
             - sudo systemctl restart httpd
 
-
     - name: Create cloud-init Secret
       kubernetes.core.k8s:
         state: present
