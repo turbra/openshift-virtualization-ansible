@@ -1,7 +1,8 @@
 ---
-namespace: "httpd"
-name: "httpd"
-url: "https://cloud.centos.org/centos/7/images/CentOS-7-x86_64-GenericCloud.qcow2"
+namespace: "test-vms"
+name: "centos9"
+template_name: "centos-stream9-server-small"
+url: "https://cloud.centos.org/centos/9-stream/x86_64/images/CentOS-Stream-GenericCloud-x86_64-9-latest.x86_64.qcow2"
 boot_image_size: "30Gi"
 vm_cpus_cores: 1
 vm_cpus_sockets: 1

@@ -7,7 +7,7 @@
     - name: "Create Namespace {{ namespace }}"
       kubernetes.core.k8s:
         state: present
-        template: ./templates/namespace.yml.j2
+        template: namespace.yml.j2
     - name: Set cloud-init fact
       ansible.builtin.set_fact:
         deploy_collection_cloud_init_content: |
@@ -37,7 +37,7 @@
     - name: "Create VirtualMachine"
       kubernetes.core.k8s:
         state: present
-        template: ./templates/virtualmachine.yml.j2
+        template: virtualmachine.yml.j2
     - name: Wait for VM to be ready
       kubernetes.core.k8s_info:
         api_version: kubevirt.io/v1
@@ -63,8 +63,8 @@
     - name: "Create Service"
       kubernetes.core.k8s:
         state: present
-        template: ./templates/service.yml.j2
+        template: service.yml.j2
     - name: "Create Route"
       kubernetes.core.k8s:
         state: present
-        template: ./templates/route.yml.j2
+        template: route.yml.j2

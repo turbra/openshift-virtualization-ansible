@@ -1,0 +1,18 @@
+stages:
+  - 🚀deploy
+
+variables:
+  ANSIBLE_HOST_KEY_CHECKING: "False"
+  ANSIBLE_INVENTORY: "/path/to/your/hosts.ini"
+
+before_script:
+  - oc login "$OPENSHIFT_SERVER" --token="$OPENSHIFT_TOKEN" --insecure-skip-tls-verify
+
+default:
+  tags:
+    - <replace-with-runner>
+
+CreateVM:
+  stage: 🚀deploy
+  script:
+    - ansible-playbook install-httpd-centos-vm.yml
